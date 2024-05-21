@@ -81,14 +81,15 @@ const MC_stats = {
     statPower: g.power,
     statMoreReload: { reload: 0.2 },
     statHealth: { health: 1e6 },
+    statNoRecoil: { recoil: 0 },
     statNoRange: { range: 0.2 },
     statNoSpray: {
         spray: 0.2,
         shudder: 0.2,
     },
     statSpray: {
-        spray: 3,
-        shudder: 3,
+        spray: 2,
+        shudder: 2,
     },
     speedStat: (speed) => {
         return {
@@ -101,7 +102,7 @@ const MC_stats = {
 // Class parts
 Class.MC_HTTYD_firework = {
     PARENT: "genericEntity",
-    COLOR: "#112557",
+    COLOR: "#c994f7",
     ALPHA: 0.4,
     BODY: {
         HEALTH: 1e6,
@@ -219,19 +220,14 @@ Class.MC_HTTYD_stormflyFire = {
 Class.MC_TITANS_godzillaBlast = {
     PARENT: "bullet",
     COLOR: "#cb42f5",
-    GUNS: [
-        {
-            POSITION: [1, 18, 1, 0, 0, 180, 3],
-            PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([
-                    MC_stats.statMain,
-                    MC_stats.statMoreReload,
-                ]),
-                TYPE: ["bullet", { COLOR: "#cb42f5" }],
-                AUTOFIRE: true,
-            },
-        }
-    ],
+    SHAPE: "M -4.5 1 C -6 1 -6 1 -6 0 C -6 -1 -6 -1 -4.5 -1 H 4 C 4 -1 5 -1 5 0 C 5 1 4 1 4 1 H -4.5",
+    BORDERLESS: true,
+    ON: [{
+        event: "tick",
+        handler: ({ body }) => {
+            body.SIZE += 0.2;
+        },
+    }],
 };
 
 // Classes
@@ -290,19 +286,36 @@ Class[MC_names.TITANS[0]] = {
     COLOR: "purple",
     GUNS: [
         {
-            POSITION: [1, 3, 1, 0, 0, 0, 0],
+            POSITION: [1, 2.6, 1, 1, 0, 0, 0],
             PROPERTIES: {
                 SHOOT_SETTINGS: combineStats([
                     MC_stats.statMain,
                     MC_stats.statMoreReload,
                     MC_stats.statNoRange,
                     MC_stats.statNoSpray,
+                    MC_stats.statNoRecoil,
                     MC_stats.statHealth,
                     MC_stats.speedStat(6),
                 ]),
                 TYPE: "MC_TITANS_godzillaBlast",
             },
         },
+        ...weaponArray({
+            POSITION: [1, 1.3, 1, 0, 0, 0, 0],
+            PROPERTIES: {
+                SHOOT_SETTINGS: combineStats([
+                    MC_stats.statMain,
+                    MC_stats.statNoRange,
+                    MC_stats.statSpray,
+                    MC_stats.statHealth,
+                    MC_stats.speedStat(0.4),
+                ]),
+                TYPE: ["bullet", {
+                    COLOR: "#cb42f5",
+                    ALPHA: 0.2,
+                }],
+            },
+        }, 8),
     ],
 }
 
