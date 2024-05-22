@@ -569,7 +569,7 @@ Class[MC_names.HTTYD[3]] = {
     ],
 }
 Class[MC_names.HTTYD[4]] = {
-    UPGRADE_TOOLTIP: ".",
+    UPGRADE_TOOLTIP: "I would never torture that dragon.",
     BODY: {
         DAMAGE: 0.4,
         HEALTH: 0.4,
