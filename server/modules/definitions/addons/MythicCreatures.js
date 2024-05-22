@@ -15,6 +15,10 @@ const MC_names = {
     HTTYD: ["Toothless", "Stormfly"],
     TITANS: ["Godzilla", "Shimu"],
 };
+const MC_assets = {
+    HTTYD: ["https://i.imgur.com/DDUkBx4.png", "https://i.imgur.com/GngZSo6.png"],
+    TITANS: ["https://i.imgur.com/iFzD9Iw.png", "https://i.imgur.com/nhA6jas.png"],
+};
 const MC_definitions = {
     bodyScale: {
         HTTYD: 4.6,
@@ -550,7 +554,7 @@ Class[MC_names.TITANS[1]] = {
                     MC_stats.speedStat(6),
                 ]),
                 TYPE: MC_functions.create(MC_functions.createLaser, {
-                    POISON: 20,
+                    POISON: 40,
                     DAMAGE: 1.2,
                 }, "#b0ceff"),
             },
@@ -584,14 +588,15 @@ Class[MC_names.TITANS[1]] = {
 for (let key in MC_names) {
     if (MC_names.hasOwnProperty(key)) {
         for (let i = 0; i < MC_names[key].length; i++) {
-            let name = MC_names[key][i],
+            let asset = MC_assets[key][i],
+                name = MC_names[key][i],
                 e = Class[name];
 
             if (!MC_functions.isCompatible(e.BODY)) throw new Error(`BODY in ${name} class isn't compatible`);
 
             e.UPGRADE_TOOLTIP += " Art by Felyn_de_fens";
             e.PARENT = "genericTank";
-            e.SHAPE = `https://github.com/ClashTest311/MC-addon/blob/main/assets/${name}.png`;
+            e.SHAPE = asset;
             e.LABEL = name;
             e.LEVEL_CAP = 120;
             e.LEVEL = 120;
