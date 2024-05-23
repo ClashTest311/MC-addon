@@ -1121,7 +1121,7 @@ class Entity extends EventEmitter {
             }
             this.color.interpret(set.COLOR);
         }
-        this.upgradeColor = set.UPGRADE_COLOR == null ? null : new Color(set.UPGRADE_COLOR).compiled;
+        if (set.UPGRADE_COLOR) this.upgradeColor = new Color(set.UPGRADE_COLOR).compiled;
         if (set.GLOW != null) {
             this.glow = {
                 radius: set.GLOW.RADIUS ?? 0,
