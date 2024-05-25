@@ -1200,12 +1200,13 @@ const Delta = class {
     constructor(dataLength, finder) {
         this.dataLength = dataLength;
         this.finder = finder;
-        this.now = this.finder([]);
+        this.data = [];
     }
-    update(...args) {
-        let old = this.now;
+    update(id, ...args) {
+        if (!this.data[id]) this.data[id] = this.finder([]);
+        let old = this.data[id];
         let now = this.finder(args);
-        this.now = now;
+        this.data[id] = now;
         let oldIndex = 0;
         let nowIndex = 0;
         let updates = [];
@@ -1341,7 +1342,7 @@ let leaderboard = new Delta(7, args => {
         }
         if (is === 0) break;
         let entry = list[top];
-        let color = args.length && args[0] == entry.team
+        let color = args.length && args[0] == entry.id
             ? '10 0 1 0 false'
             : entry.color.compiled;
         topTen.push({
@@ -1367,20 +1368,20 @@ let subscribers = [];
 setInterval(() => {
     logs.minimap.set();
     let minimapUpdate = minimapAll.update(),
-        leaderboardUpdate = leaderboard.update(),
-        oldTeamUpdate,
+        leaderboardUpdate,
         teamUpdate;
     for (let socket of subscribers) {
         if (!socket.status.hasSpawned) continue;
-        teamUpdate = minimapTeams.update(socket.player.team);
-        if (teamUpdate.update.length == 2 && !socket.status.needsNewBroadcast) {
-            teamUpdate = oldTeamUpdate;
-        } else {
-            oldTeamUpdate = teamUpdate;
-        }
+        leaderboardUpdate = leaderboard.update(
+            socket.id,
+            c.GROUPS || (c.MODE == 'ffa' && !c.TAG) ? socket.player.body.id : null
+        );
+        teamUpdate = minimapTeams.update(
+            socket.id,
+            socket.player.team
+        );
         socket.talk(
             "b",
-            c.GROUPS || (c.MODE == 'ffa' && !c.TAG),
             ...socket.status.needsNewBroadcast ? minimapUpdate.reset : minimapUpdate.update,
             ...teamUpdate ? socket.status.needsNewBroadcast ? teamUpdate.reset : teamUpdate.update : [0, 0],
             ...socket.status.needsNewBroadcast ? leaderboardUpdate.reset : leaderboardUpdate.update
@@ -1410,6 +1411,8 @@ const broadcast = {
 };
 let lastTime = 0;
 
+// Get a unique id for each socket
+let socketId = 0;
 const sockets = {
     players: players,
     clients: clients,
@@ -1433,6 +1436,7 @@ const sockets = {
         util.log("A client is trying to connect...");
 
         // Set it up
+        socket.id = socketId++;
         socket.binaryType = "arraybuffer";
         socket.key = "";
         socket.player = { camera: {} };
