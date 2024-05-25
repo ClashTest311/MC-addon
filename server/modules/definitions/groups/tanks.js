@@ -2256,7 +2256,6 @@ Class.fieldGun = {
             },
         },
         {
-            /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
             POSITION: [10, 9, 1, 9, 0, 0, 0],
         },
         {
@@ -2519,7 +2518,6 @@ Class.assembler = {
     ],
     TURRETS: [
         {
-            /**        SIZE X   Y  ANGLE ARC */
             POSITION: [2.5, 14, 0, 0,    360, 1],
             TYPE: 'assemblerDot'
         }
