@@ -1202,7 +1202,7 @@ const Delta = class {
         this.finder = finder;
         this.data = [];
     }
-    update(id, ...args) {
+    update(id = 0, ...args) {
         if (!this.data[id]) this.data[id] = this.finder([]);
         let old = this.data[id];
         let now = this.finder(args);
