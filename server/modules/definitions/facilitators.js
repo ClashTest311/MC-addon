@@ -643,7 +643,7 @@ class LayeredBoss {
             SHAPE: this.shape,
             COLOR: -1,
             INDEPENDENT: true,
-            CONTROLLERS: [["spin", { independent: true, speed: 0.02 / c.runSpeed * (this.layerID % 2 ? -1 : 1) }]],
+            CONTROLLERS: [["spin", { independent: true, speed: 0.02 / Config.runSpeed * (this.layerID % 2 ? -1 : 1) }]],
             MAX_CHILDREN, 
             GUNS: [],
             TURRETS: [],

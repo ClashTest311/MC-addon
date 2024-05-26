@@ -140,7 +140,7 @@ class Gun extends EventEmitter {
     recoil() {
         if (this.motion || this.position) {
             // Simulate recoil
-            this.motion -= (0.25 * this.position) / c.runSpeed;
+            this.motion -= (0.25 * this.position) / Config.runSpeed;
             this.position += this.motion;
             if (this.position < 0) {
                 // Bouncing off the back
@@ -154,7 +154,7 @@ class Gun extends EventEmitter {
         if (this.canShoot && !this.body.settings.hasNoRecoil) {
             // Apply recoil to motion
             if (this.motion > 0) {
-                let recoilForce = (-this.position * this.trueRecoil * this.body.recoilMultiplier * 1.08 / this.body.size) / c.runSpeed;
+                let recoilForce = (-this.position * this.trueRecoil * this.body.recoilMultiplier * 1.08 / this.body.size) / Config.runSpeed;
                 this.body.accel.x += recoilForce * Math.cos(this.recoilDir);
                 this.body.accel.y += recoilForce * Math.sin(this.recoilDir);
             }
@@ -250,7 +250,7 @@ class Gun extends EventEmitter {
         // Cycle up if we should
         if (shootPermission || !this.waitToCycle) {
             if (this.cycle < 1) {
-                this.cycle += 1 / (this.settings.reload * c.runSpeed * (this.calculator == "necro" || this.calculator == "fixed reload" ? 1 : sk.rld));
+                this.cycle += 1 / (this.settings.reload * Config.runSpeed * (this.calculator == "necro" || this.calculator == "fixed reload" ? 1 : sk.rld));
             }
         }
         // Firing routines
@@ -308,7 +308,7 @@ class Gun extends EventEmitter {
         }
         spread *= Math.PI / 180;
         // Find speed
-        let vecLength = (this.negRecoil ? -1 : 1) * this.settings.speed * c.runSpeed * sk.spd * (1 + shudder),
+        let vecLength = (this.negRecoil ? -1 : 1) * this.settings.speed * Config.runSpeed * sk.spd * (1 + shudder),
             vecAngle = this.angle + this.body.facing + spread,
         s = new Vector(vecLength * Math.cos(vecAngle), vecLength * Math.sin(vecAngle));
         // Boost it if we should
@@ -560,7 +560,7 @@ class Gun extends EventEmitter {
     }
     getTracking() {
         return {
-            speed: c.runSpeed * (this.bulletStats == "master" ? this.body.skill.spd : this.bulletStats.spd) * this.settings.maxSpeed * this.natural.SPEED,
+            speed: Config.runSpeed * (this.bulletStats == "master" ? this.body.skill.spd : this.bulletStats.spd) * this.settings.maxSpeed * this.natural.SPEED,
             range: Math.sqrt(this.bulletStats == "master" ? this.body.skill.spd : this.bulletStats.spd) * this.settings.range * this.natural.RANGE
         };
     }
@@ -984,7 +984,7 @@ class Entity extends EventEmitter {
         let lastingEffects = [], needsBodyAttribRefresh = false;
         for (let i = 0; i < this.statusEffects.length; i++) {
             let entry = this.statusEffects[i];
-            entry.durationLeftover -= 1 / c.runSpeed;
+            entry.durationLeftover -= 1 / Config.runSpeed;
             if (entry.durationLeftover > 0) {
                 lastingEffects.push(entry);
             } else {
@@ -1230,7 +1230,7 @@ class Entity extends EventEmitter {
         if (set.ARENA_CLOSER != null) this.isArenaCloser = set.ARENA_CLOSER;
         if (set.BRANCH_LABEL != null) this.branchLabel = set.BRANCH_LABEL;
         if (set.BATCH_UPGRADES != null) this.batchUpgrades = set.BATCH_UPGRADES;
-        for (let i = 0; i < c.MAX_UPGRADE_TIER; i++) {
+        for (let i = 0; i < Config.MAX_UPGRADE_TIER; i++) {
             let tierProp = 'UPGRADES_TIER_' + i;
             if (set[tierProp] != null && emitEvent) {
                 for (let j = 0; j < set[tierProp].length; j++) {
@@ -1245,7 +1245,7 @@ class Entity extends EventEmitter {
                     }
                     this.upgrades.push({
                         class: trueUpgrades,
-                        level: c.TIER_MULTIPLIER * i,
+                        level: Config.TIER_MULTIPLIER * i,
                         index: index.substring(0, index.length-1),
                         tier: i,
                         branch: 0,
@@ -1459,7 +1459,7 @@ class Entity extends EventEmitter {
                 if (this.coreSize == null) this.coreSize = this.SIZE;
             }
             if (set.BATCH_UPGRADES != null) this.batchUpgrades = set.BATCH_UPGRADES;
-            for (let i = 0; i < c.MAX_UPGRADE_TIER; i++) {
+            for (let i = 0; i < Config.MAX_UPGRADE_TIER; i++) {
                 let tierProp = 'UPGRADES_TIER_' + i;
                 if (set[tierProp] != null && emitEvent) {
                     for (let j = 0; j < set[tierProp].length; j++) {
@@ -1474,7 +1474,7 @@ class Entity extends EventEmitter {
                         }
                         this.upgrades.push({
                             class: trueUpgrades,
-                            level: c.TIER_MULTIPLIER * i,
+                            level: Config.TIER_MULTIPLIER * i,
                             index: index.substring(0, index.length-1),
                             tier: i,
                             branch,
@@ -1529,7 +1529,7 @@ class Entity extends EventEmitter {
             }
             this.upgrades.push({
                 class: upgradeClass,
-                level: c.TIER_MULTIPLIER * upgradeTier,
+                level: Config.TIER_MULTIPLIER * upgradeTier,
                 index: upgradeIndex.substring(0, upgradeIndex.length-1),
                 tier: upgradeTier,
                 branch: 0,
@@ -1572,9 +1572,9 @@ class Entity extends EventEmitter {
         }
 
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
-        this.acceleration = (accelerationMultiplier * c.runSpeed * this.ACCELERATION) / speedReduce;
+        this.acceleration = (accelerationMultiplier * Config.runSpeed * this.ACCELERATION) / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        this.topSpeed = (topSpeedMultiplier * c.runSpeed * this.SPEED * this.skill.mob) / speedReduce;
+        this.topSpeed = (topSpeedMultiplier * Config.runSpeed * this.SPEED * this.skill.mob) / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         this.health.set(((this.settings.healthWithLevel ? 2 * this.level : 0) + this.HEALTH) * this.skill.hlt * healthMultiplier);
         this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
@@ -1639,7 +1639,7 @@ class Entity extends EventEmitter {
         this.move();
     }
     get level() {
-        return Math.min(this.levelCap ?? c.LEVEL_CAP, this.skill.level);
+        return Math.min(this.levelCap ?? Config.LEVEL_CAP, this.skill.level);
     }
     get size() {
         return this.bond == null ? (this.coreSize || this.SIZE) * this.sizeMultiplier * (1 + this.level / 45) : this.bond.size * this.bound.size;
@@ -1651,10 +1651,10 @@ class Entity extends EventEmitter {
         return this.size * lazyRealSizes[Math.floor(Math.abs(this.shape))];
     }
     get xMotion() {
-        return (this.velocity.x + this.accel.x) / c.runSpeed;
+        return (this.velocity.x + this.accel.x) / Config.runSpeed;
     }
     get yMotion() {
-        return (this.velocity.y + this.accel.y) / c.runSpeed;
+        return (this.velocity.y + this.accel.y) / Config.runSpeed;
     }
     set gunStatScale(gunStatScale) {
         if (typeof gunStatScale == "object") {
@@ -1752,7 +1752,7 @@ class Entity extends EventEmitter {
             }
             this.emit("upgrade", { body: this });
             if (this.color.base == '-1' || this.color.base == 'mirror') {
-                if (c.GROUPS || (c.MODE == 'ffa' && !c.TAG)) {
+                if (Config.GROUPS || (Config.MODE == 'ffa' && !Config.TAG)) {
                     this.color.base = this.isBot ? "darkGrey" : getTeamColor(TEAM_RED);
                 } else {
                     this.color.base = getTeamColor(this.team);
@@ -1800,8 +1800,8 @@ class Entity extends EventEmitter {
                 x: 0,
                 y: 0,
             },
-            a = this.acceleration / c.runSpeed;
-        if (c.SPACE_PHYSICS) {
+            a = this.acceleration / Config.runSpeed;
+        if (Config.SPACE_PHYSICS) {
             this.maxSpeed = this.topSpeed;
             this.damp = 100;
         }
@@ -1961,26 +1961,26 @@ class Entity extends EventEmitter {
             args = this.facingType[1];
         switch (type) {
             case "autospin":
-                this.facing += (args.speed ?? 0.02) / c.runSpeed;
+                this.facing += (args.speed ?? 0.02) / Config.runSpeed;
                 break;
             case "turnWithSpeed":
-                this.facing += ((this.velocity.length / 90) * Math.PI) / c.runSpeed;
+                this.facing += ((this.velocity.length / 90) * Math.PI) / Config.runSpeed;
                 break;
             case "spin":
-                this.facing += (args.speed ?? 0.05) / c.runSpeed;
+                this.facing += (args.speed ?? 0.05) / Config.runSpeed;
                 break;
             case "fastspin":
-                this.facing += (args.speed ?? 0.1) / c.runSpeed;
+                this.facing += (args.speed ?? 0.1) / Config.runSpeed;
                 break;
             case "veryfastspin":
-                this.facing += (args.speed ?? 1) / c.runSpeed;
+                this.facing += (args.speed ?? 1) / Config.runSpeed;
                 break;
             case "withMotion":
                 this.facing = this.velocity.direction;
                 break;
             case "smoothWithMotion":
             case "looseWithMotion":
-                this.facing = util.interpolateAngle(this.facing, this.velocity.direction, c.runSpeed / (args.speed ?? 4));
+                this.facing = util.interpolateAngle(this.facing, this.velocity.direction, Config.runSpeed / (args.speed ?? 4));
                 break;
             case "withTarget":
             case "toTarget":
@@ -1993,7 +1993,7 @@ class Entity extends EventEmitter {
             case "looseWithTarget":
             case "looseToTarget":
             case "smoothToTarget":
-                this.facing = util.interpolateAngle(this.facing, Math.atan2(t.y, t.x), c.runSpeed / (args.speed ?? 4));
+                this.facing = util.interpolateAngle(this.facing, Math.atan2(t.y, t.x), Config.runSpeed / (args.speed ?? 4));
                 break;
             case "noFacing":
                 this.facing = args.angle ?? 0;
@@ -2001,7 +2001,7 @@ class Entity extends EventEmitter {
             case "bound":
                 let angleToTarget, angleDiff = 3,
                     reduceIndependence = false,
-                    slowness = this.settings.mirrorMasterAngle ? 1 : (args.slowness ?? 4) / c.runSpeed;
+                    slowness = this.settings.mirrorMasterAngle ? 1 : (args.slowness ?? 4) / Config.runSpeed;
                 if (this.control.main) {
                     angleToTarget = Math.atan2(t.y, t.x);
                     angleDiff = Math.abs(util.angleDifference(angleToTarget, this.firingArc[0]));
@@ -2014,12 +2014,12 @@ class Entity extends EventEmitter {
                     reduceIndependence = true;
                 }
                 if (reduceIndependence) {
-                    this.perceptionAngleIndependence -= 0.3 / c.runSpeed;
+                    this.perceptionAngleIndependence -= 0.3 / Config.runSpeed;
                     if (this.perceptionAngleIndependence < 0) {
                         this.perceptionAngleIndependence = 0;
                     }
                 } else {
-                    this.perceptionAngleIndependence += 0.3 / c.runSpeed;
+                    this.perceptionAngleIndependence += 0.3 / Config.runSpeed;
                     if (this.perceptionAngleIndependence > 1) {
                         this.perceptionAngleIndependence = 1;
                     }
@@ -2035,7 +2035,7 @@ class Entity extends EventEmitter {
             this.vfacing = oldVFacing;
         } else {
             this.facing = ((this.facing % TAU) + TAU) % TAU;
-            this.vfacing = util.angleDifference(oldFacing, this.facing) * c.runSpeed;
+            this.vfacing = util.angleDifference(oldFacing, this.facing) * Config.runSpeed;
         }
     }
     takeSelfie() {
@@ -2058,18 +2058,18 @@ class Entity extends EventEmitter {
         this.accel.null();
         // Apply motion
         this.stepRemaining = 1;
-        if (c.SPACE_PHYSICS) this.stepRemaining = 2;
-        this.x += (this.stepRemaining * this.velocity.x) / c.runSpeed;
-        this.y += (this.stepRemaining * this.velocity.y) / c.runSpeed;
+        if (Config.SPACE_PHYSICS) this.stepRemaining = 2;
+        this.x += (this.stepRemaining * this.velocity.x) / Config.runSpeed;
+        this.y += (this.stepRemaining * this.velocity.y) / Config.runSpeed;
     }
     friction() {
         var motion = this.velocity.length,
             excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-            var k = this.damp / c.runSpeed,
+            var k = this.damp / Config.runSpeed,
                 drag = excess / (k + 1),
                 finalvelocity = this.maxSpeed + drag;
-            if (c.SPACE_PHYSICS)
+            if (Config.SPACE_PHYSICS)
                 finalvelocity *= this.type === "bullet" ? 1.005 : 1.1;
             this.velocity.x = (finalvelocity * this.velocity.x) / motion;
             this.velocity.y = (finalvelocity * this.velocity.y) / motion;
@@ -2086,20 +2086,20 @@ class Entity extends EventEmitter {
             return 0;
         }
         if (!this.settings.canGoOutsideRoom) {
-            if (c.ARENA_TYPE === "circle") {
+            if (Config.ARENA_TYPE === "circle") {
                 let centerPoint = {
                     x: room.width / 2,
                     y: room.height / 2,
                 }, dist = util.getDistance(this, centerPoint);
                 if (dist > room.width / 2) {
-                    let strength = (dist - room.width / 2) * c.ROOM_BOUND_FORCE / (c.runSpeed * 750);
+                    let strength = (dist - room.width / 2) * Config.ROOM_BOUND_FORCE / (Config.runSpeed * 750);
                     this.x = util.lerp(this.x, centerPoint.x, strength);
                     this.y = util.lerp(this.y, centerPoint.y, strength);
                 }
             } else {
                 let padding = this.realSize - 50;
-                this.accel.x -= Math.max(this.x + padding - room.width, Math.min(this.x - padding, 0)) * c.ROOM_BOUND_FORCE / c.runSpeed;
-                this.accel.y -= Math.max(this.y + padding - room.height, Math.min(this.y - padding, 0)) * c.ROOM_BOUND_FORCE / c.runSpeed;
+                this.accel.x -= Math.max(this.x + padding - room.width, Math.min(this.x - padding, 0)) * Config.ROOM_BOUND_FORCE / Config.runSpeed;
+                this.accel.y -= Math.max(this.y + padding - room.height, Math.min(this.y - padding, 0)) * Config.ROOM_BOUND_FORCE / Config.runSpeed;
             }
         }
     }
@@ -2122,7 +2122,7 @@ class Entity extends EventEmitter {
         }
         // Life-limiting effects
         if (this.settings.diesAtRange) {
-            this.range -= 1 / c.runSpeed;
+            this.range -= 1 / Config.runSpeed;
             if (this.range < 0) {
                 this.kill();
             }
@@ -2132,7 +2132,7 @@ class Entity extends EventEmitter {
                 !this.collisionArray.length &&
                 this.velocity.length < this.topSpeed / 2
             ) {
-                this.health.amount -= this.health.getDamage(1 / c.runSpeed);
+                this.health.amount -= this.health.getDamage(1 / Config.runSpeed);
             }
         }
         // Shield regen and damage
@@ -2310,7 +2310,7 @@ class Entity extends EventEmitter {
         entitiesToAvoid.push(this);
         this.isProtected = true;
     }
-    say(message, duration = c.CHAT_MESSAGE_DURATION) {
+    say(message, duration = Config.CHAT_MESSAGE_DURATION) {
         if (!chats[this.id]) {
             chats[this.id] = [];
         }

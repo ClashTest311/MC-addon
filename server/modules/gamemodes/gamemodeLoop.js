@@ -1,24 +1,24 @@
 let bossRush;
-if (c.SPECIAL_BOSS_SPAWNS) bossRush = new BossRush();
+if (Config.SPECIAL_BOSS_SPAWNS) bossRush = new BossRush();
 let train;
-if (c.TRAIN) train = new Train();
+if (Config.TRAIN) train = new Train();
 let moon;
-if (c.SPACE_MODE) moon = new Moon();
+if (Config.SPACE_MODE) moon = new Moon();
 let hunt;
-if (c.HUNT) hunt = new ManHunt();
+if (Config.HUNT) hunt = new ManHunt();
 
-if (c.MOTHERSHIP_LOOP) mothershipLoop.spawn();
-if (c.SPECIAL_BOSS_SPAWNS) bossRush.init();
-if (c.MAZE > 0) generateMaze(c.MAZE);
+if (Config.MOTHERSHIP_LOOP) mothershipLoop.spawn();
+if (Config.SPECIAL_BOSS_SPAWNS) bossRush.init();
+if (Config.MAZE > 0) generateMaze(Config.MAZE);
 
 let logger = new LagLogger();
 const gamemodeLoop = function() {
     logger.set();
-    if (c.HUNT) hunt.loop();
-    if (c.TRAIN) train.loop();
-    if (c.SPACE_MODE) moon.loop();
-    if (c.MOTHERSHIP_LOOP) mothershipLoop.loop();
-    if (c.SPECIAL_BOSS_SPAWNS) bossRush.loop();
+    if (Config.HUNT) hunt.loop();
+    if (Config.TRAIN) train.loop();
+    if (Config.SPACE_MODE) moon.loop();
+    if (Config.MOTHERSHIP_LOOP) mothershipLoop.loop();
+    if (Config.SPECIAL_BOSS_SPAWNS) bossRush.loop();
     logger.mark();
     if (logger.totalTime > 100) {
         console.log("Gamemode loop is taking a long time!");

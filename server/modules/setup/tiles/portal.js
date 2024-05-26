@@ -13,7 +13,7 @@ portal = new Tile({
             let dx = entity.x - tile.loc.x,
                 dy = entity.y - tile.loc.y,
                 dist2 = dx ** 2 + dy ** 2,
-                force = c.ROOM_BOUND_FORCE;
+                force = Config.ROOM_BOUND_FORCE;
 
             //push away big boys
             if (entity.type === "miniboss" || entity.isMothership) {

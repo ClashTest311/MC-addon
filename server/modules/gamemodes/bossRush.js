@@ -97,7 +97,7 @@ class BossRush {
         this.friendlyBossChoices = ["roguePalisade", "rogueArmada", "julius", "genghis", "napoleon"];
         this.bigFodderChoices = ["sentryGun", "sentrySwarm", "sentryTrap", "shinySentryGun"];
         this.smallFodderChoices = ["crasher"];
-        this.length = c.CLASSIC_SIEGE ? this.waveCodes.length : c.WAVES;
+        this.length = Config.CLASSIC_SIEGE ? this.waveCodes.length : Config.WAVES;
         this.waves = this.generateWaves();
         this.waveId = -1;
         this.gameActive = true;
@@ -119,7 +119,7 @@ class BossRush {
                 wave.push(boss);
             }
 
-            waves.push(c.CLASSIC_SIEGE ? this.waveCodes[i] : wave);
+            waves.push(Config.CLASSIC_SIEGE ? this.waveCodes[i] : wave);
         }
         return waves;
     }
@@ -210,7 +210,7 @@ class BossRush {
             enemy.isBoss = true;
         }
 
-        if (!c.CLASSIC_SIEGE) {
+        if (!Config.CLASSIC_SIEGE) {
             //spawn fodder enemies
             for (let i = 0; i < this.waveId / 5; i++) {
                 this.spawnEnemyWrapper(getSpawnableArea(TEAM_ENEMIES), ran.choose(this.bigFodderChoices));
