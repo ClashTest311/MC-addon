@@ -963,7 +963,7 @@ const spawn = (socket, name) => {
     for (let i = 0; i < msg.length; i++) {
         body.sendMessage(msg[i]);
     }
-    socket.talk("Config", socket.camera.x, socket.camera.y, socket.camera.fov);
+    socket.talk("c", socket.camera.x, socket.camera.y, socket.camera.fov);
     return player;
 };
 
