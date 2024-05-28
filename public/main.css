@@ -40,7 +40,7 @@ body {
 body {
     font-family: Ubuntu;
     font-size: 14px;
-    background-image: url('./osa_background_tile.png');
+    background-image: url('./backgroundTile.png');
     background-repeat: repeat;
     background-color: gray;
 }
