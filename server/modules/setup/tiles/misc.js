@@ -79,7 +79,7 @@ wall = new Tile({
         let o = new Entity(tile.loc);
         o.define("wall");
         o.team = TEAM_ROOM;
-        o.SIZE = room.tileWidth / 2;
+        o.SIZE = room.tileWidth / 2 / lazyRealSizes[4] * Math.SQRT2 - 2;
         o.protect();
         o.life();
         makeHitbox(o);
