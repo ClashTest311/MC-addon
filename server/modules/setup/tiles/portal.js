@@ -1,4 +1,4 @@
-let launchForce = 1250,
+let launchForce = 1500,
     gravity = 13500,
     minibossPush = 30000,
 
@@ -47,8 +47,8 @@ portal = new Tile({
             //launch that idiot from the outportal
             entity.velocity.x = ax * force;
             entity.velocity.y = ay * force;
-            entity.x = exitport.loc.x + ax * room.tileWidth;
-            entity.y = exitport.loc.y + ay * room.tileHeight;
+            entity.x = exitport.loc.x + ax * room.tileWidth / 2;
+            entity.y = exitport.loc.y + ay * room.tileHeight / 2;
             entity.protect()
 
             //also don't forget to bring her kids along the ride
