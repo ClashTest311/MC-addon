@@ -768,7 +768,7 @@ Class.infiltratorOfficialV2 = {
 		{
 			POSITION: [5, 6, 1.4, 6, 5.5, 0, 0],
 			PROPERTIES: {
-				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, {maxSpeed: 0.9, size: 1.5, reload: 0.9}]),
+				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, {maxSpeed: 0.9, size: 1.5, reload: 1.4}]),
 				TYPE: "drone",
 				MAX_CHILDREN: 2,
 				AUTOFIRE: true,
@@ -779,7 +779,7 @@ Class.infiltratorOfficialV2 = {
 		}, {
 			POSITION: [5, 6, 1.4, 6, -5.5, 0, 0],
 			PROPERTIES: {
-				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, {maxSpeed: 0.9, size: 1.5, reload: 0.9}]),
+				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, {maxSpeed: 0.9, size: 1.5, reload: 1.4}]),
 				TYPE: "drone",
 				MAX_CHILDREN: 2,
 				AUTOFIRE: true,
@@ -790,7 +790,7 @@ Class.infiltratorOfficialV2 = {
 		}, {
 			POSITION: [5, 6, 1.4, 8, 0, 0, 0],
 			PROPERTIES: {
-				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, g.pounder, {damage: 0.85, maxSpeed: 0.9, size: 2, reload: 0.8}]),
+				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, g.pounder, {damage: 0.85, maxSpeed: 0.9, size: 2, reload: 1.4}]),
 				TYPE: "betadrone",
 				MAX_CHILDREN: 2,
 				AUTOFIRE: true,
@@ -1308,7 +1308,7 @@ Class.raiderOfficialV2 = {
 	LABEL: "Raider",
 	GUNS: weaponArray([
 		{
-			POSITION: [4, 5, 2.1, 8, 3.25, 0, 0],
+			POSITION: [4, 5, 2.1, 8, 3, 0, 0],
 			PROPERTIES: {
 				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, {damage: 0.9, health: 0.75, maxSpeed: 0.9, size: 1.5, reload: 1.2}]),
 				TYPE: "drone",
@@ -1319,7 +1319,7 @@ Class.raiderOfficialV2 = {
 				WAIT_TO_CYCLE: true,
 			},
 		}, {
-			POSITION: [4, 5, 2.1, 8, -3.25, 0, 0],
+			POSITION: [4, 5, 2.1, 8, -3, 0, 0],
 			PROPERTIES: {
 				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, {damage: 0.9, health: 0.75, maxSpeed: 0.9, size: 1.5, reload: 1.2}]),
 				TYPE: "drone",
@@ -1332,7 +1332,7 @@ Class.raiderOfficialV2 = {
 		}, {
 			POSITION: [6, 6.5, 1.4, 8, 0, 0, 0],
 			PROPERTIES: {
-				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, g.pounder, {damage: 1.04, maxSpeed: 0.9, size: 2, reload: 1.05}]),
+				SHOOT_SETTINGS: combineStats([g.drone, g.overseer, g.overseer, g.pounder, {damage: 1.04, maxSpeed: 0.9, size: 2, reload: 1.2}]),
 				TYPE: "betadrone",
 				MAX_CHILDREN: 1,
 				AUTOFIRE: true,
