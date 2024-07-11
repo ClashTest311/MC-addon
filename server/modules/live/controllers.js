@@ -149,22 +149,26 @@ class io_moveInCircles extends IO {
     constructor(body) {
         super(body)
         this.acceptsFromTop = false
-        this.timer = ran.irandom(10) + 3
+        this.timer = ran.irandom(5) + 3
+        this.pathAngle = ran.random(2 * Math.PI);
         this.goal = {
-            x: this.body.x + 10 * Math.cos(-this.body.facing),
-            y: this.body.y + 10 * Math.sin(-this.body.facing)
+            x: this.body.x + 10 * Math.cos(this.pathAngle),
+            y: this.body.y + 10 * Math.sin(this.pathAngle)
         }
     }
     think() {
-        if (!(this.timer--)) {
-            this.timer = 10
+        if (!this.timer--) {
+            this.timer = 5
             this.goal = {
-                x: this.body.x + 10 * Math.cos(-this.body.facing),
-                y: this.body.y + 10 * Math.sin(-this.body.facing)
+                x: this.body.x + 10 * Math.cos(this.pathAngle),
+                y: this.body.y + 10 * Math.sin(this.pathAngle)
             }
+            // turnWithSpeed turn speed (but condensed over 5 ticks)
+            this.pathAngle -= ((this.body.velocity.length / 90) * Math.PI) / Config.runSpeed * 5;
         }
         return {
-            goal: this.goal
+            goal: this.goal,
+            power: this.body.ACCELERATION > 0.1 ? 0.2 : 1
         }
     }
 }
@@ -177,6 +181,7 @@ class io_listenToPlayer extends IO {
         this.acceptsFromTop = false;
 
         this.normalFacingType = null;
+        this.normalFacingTypeArgs = null;
         this.wasAutospinning = false;
         this.isAutospinning = false;
     }
@@ -198,19 +203,21 @@ class io_listenToPlayer extends IO {
         this.isAutospinning = this.player.command.autospin;
         if (this.isAutospinning && !this.wasAutospinning) {
             // Save facing type for later
-            this.normalFacingType = [...this.body.facingType];
+            this.normalFacingType = this.body.facingType;
+            this.normalFacingTypeArgs = this.body.facingTypeArgs;
+            this.body.facingType = "spin";
             this.wasAutospinning = true;
         } else if (!this.isAutospinning && this.wasAutospinning) {
             // Restore facing type from earlier
-            this.body.facingType = [...this.normalFacingType];
+            this.body.facingType = this.normalFacingType;
+            this.body.facingTypeArgs = this.normalFacingTypeArgs;
             this.wasAutospinning = false;
         }
         // Define autospin facingType
         if (this.isAutospinning) {
             let speed = 0.05 * (alt ? -1 : 1) * this.body.autospinBoost;
-            this.body.facingType = ["spin", {speed}];
+            this.body.facingTypeArgs = {speed};
         }
-
         this.body.autoOverride = this.player.command.override;
         if (this.body.invuln && (fire || alt)) this.body.invuln = false;
         return {
@@ -218,8 +225,8 @@ class io_listenToPlayer extends IO {
             fire,
             alt,
             goal: this.static ? null : {
-                x: this.body.x + this.player.command.right - this.player.command.left,
-                y: this.body.y + this.player.command.down - this.player.command.up,
+                x: this.body.x + this.player.command.movement.x,
+                y: this.body.y + this.player.command.movement.y,
             },
             main: fire,
         };
@@ -400,8 +407,8 @@ class io_stackGuns extends IO {
         for (let i = 0; i < this.body.guns.length; i++) {
             let gun = this.body.guns[i];
             if (!gun.canShoot || !gun.stack) continue;
-            let reloadStat = (gun.calculator == "necro" || gun.calculator == "fixed reload") ? 1 : (gun.bulletStats === "master" ? this.body.skill : gun.bulletStats).rld,
-                readiness = (1 - gun.cycle) / (gun.settings.reload * reloadStat);
+            let reloadStat = (gun.calculator == "necro" || gun.calculator == "fixed reload") ? 1 : gun.bulletSkills.rld,
+                readiness = (1 - gun.cycle) / (gun.shootSettings.reload * reloadStat);
             if (lowestReadiness > readiness) {
                 lowestReadiness = readiness;
                 readiestGun = gun;
@@ -447,7 +454,9 @@ class io_nearestDifferentMaster extends IO {
         (this.body.aiSettings.BLIND || ((e.x - m.x) * (e.x - m.x) < sqrRange && (e.y - m.y) * (e.y - m.y) < sqrRange)) &&
         (this.body.aiSettings.SKYNET || ((e.x - mm.x) * (e.x - mm.x) < sqrRangeMaster && (e.y - mm.y) * (e.y - mm.y) < sqrRangeMaster));
     }
-    wouldHitWall = (me, enemy) => wouldHitWall(me, enemy); // Override
+    wouldHitWall (me, enemy) {
+        wouldHitWall(me, enemy); // Override
+    }
     buildList(range) {
         // Establish whom we judge in reference to
         let mostDangerous = 0,
@@ -739,16 +748,18 @@ class io_spin2 extends IO {
         // On spawn logic
         let alt = this.body.master.control.alt;
         let reverse = (this.reverseOnAlt && alt) ? -1 : 1;
-        this.body.facingType = ["spin", {speed: this.speed * reverse}];
+        this.body.facingType = "spin";
+        this.body.facingTypeArgs = {speed: this.speed * reverse};
     }
     think(input) {
-        if (!this.reverseOnTheFly) return;
+        if (!this.reverseOnTheFly || !this.reverseOnAlt) return;
 
         // Live logic
         let alt = this.body.master.control.alt;
         if (this.lastAlt != alt) {
-            let reverse = (this.reverseOnAlt && alt) ? -1 : 1;
-            this.body.facingType = ["spin", {speed: this.speed * reverse}];
+            let reverse = alt ? -1 : 1;
+            this.body.facingType = "spin";
+            this.body.facingTypeArgs = {speed: this.speed * reverse};
             this.lastAlt = alt;
         }
     }

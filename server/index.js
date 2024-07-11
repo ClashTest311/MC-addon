@@ -38,8 +38,8 @@ function collide(collision) {
         util.error("x: " + other.x + " y: " + other.y);
         util.error(other.collisionArray);
         util.error("health: " + other.health.amount);
-        util.warn("Ghost removed.");
         if (grid.checkIfInHSHG(other)) {
+            other.kill();
             util.warn("Ghost removed.");
             grid.removeObject(other);
         }
@@ -52,6 +52,7 @@ function collide(collision) {
         util.error(instance.collisionArray);
         util.error("health: " + instance.health.amount);
         if (grid.checkIfInHSHG(instance)) {
+            other.kill();
             util.warn("Ghost removed.");
             grid.removeObject(instance);
         }
@@ -74,12 +75,8 @@ function collide(collision) {
                 case 4:
                     mazewallcollide(wall, entity);
                     break;
-                case 0:
-                    mooncollide(wall, entity);
-                    break;
                 default:
-                    let a = entity.type === "bullet" ? 1 + 10 / (entity.velocity.length + 10) : 1;
-                    advancedcollide(wall, entity, false, false, a);
+                    mooncollide(wall, entity);
                     break;
             }
             break;
@@ -258,23 +255,24 @@ const gameloop = () => {
     }
 };
 
-setTimeout(closeArena, 60000 * 120); // Restart every 2 hours
+setTimeout(closeArena, 2 * 60 * 60 * 1000); // Restart every 2 hours
 
 global.naturallySpawnedBosses = [];
 global.bots = [];
 let bossTimer = 0;
-// A less important loop.
-let maintainloop = () => {
-    // Regen health and update the grid
+let regenerateHealthAndShield = () => {
     for (let i = 0; i < entities.length; i++) {
         let instance = entities[i];
         if (instance.shield.max) {
             instance.shield.regenerate();
         }
-        if (instance.health.amount) {
+        if (instance.health.max) {
             instance.health.regenerate(instance.shield.max && instance.shield.max === instance.shield.amount);
         }
     }
+}
+const maintainloop = () => {
+    // Update the grid
     if (!naturallySpawnedBosses.length && bossTimer++ > Config.BOSS_SPAWN_COOLDOWN) {
         bossTimer = -Config.BOSS_SPAWN_DURATION;
         let selection = Config.BOSS_TYPES[ran.chooseChance(...Config.BOSS_TYPES.map((selection) => selection.chance))],
@@ -321,24 +319,33 @@ let maintainloop = () => {
 
     // then add new bots if arena is open
     if (!global.arenaClosed && bots.length < Config.BOTS) {
-        let team = Config.MODE === "tdm" ? getWeakestTeam() : undefined,
+        let botName = Config.BOT_NAME_PREFIX + ran.chooseBotName(),
+            team = Config.MODE === "tdm" ? getWeakestTeam() : undefined,
             limit = 20, // give up after 20 attempts and just pick whatever is currently chosen
             loc;
         do {
             loc = getSpawnableArea(team);
         } while (limit-- && dirtyCheck(loc, 50))
         let o = new Entity(loc);
-        o.define('bot');
         o.define(Config.SPAWN_CLASS);
+        o.define({ CONTROLLERS: ["nearestDifferentMaster"] });
         o.refreshBodyAttributes();
         o.skill.score = Config.BOT_START_XP;
         o.isBot = true;
-        o.name = Config.BOT_NAME_PREFIX + ran.chooseBotName();
+        o.name = botName;
+        o.invuln = true;
+        o.nameColor = "#ffffff";
         o.leftoverUpgrades = ran.chooseChance(...Config.BOT_CLASS_UPGRADE_CHANCES);
         let color = Config.RANDOM_COLORS ? Math.floor(Math.random() * 20) : team ? getTeamColor(team) : "darkGrey";
         o.color.base = color;
         if (team) o.team = team;
         bots.push(o);
+        setTimeout(() => {
+            // allow them to move
+            o.define([o.defs, 'bot']);
+            o.refreshBodyAttributes();
+            o.invuln = false;
+        }, 3000 + Math.floor(Math.random() * 7000));
         o.on('dead', () => util.remove(bots, bots.indexOf(o)));
     }
 };
@@ -353,6 +360,9 @@ if (Config.REPL_WINDOW) {
 
 // Bring it to life
 let counter = 0;
+setInterval(() => {
+    regenerateHealthAndShield();
+}, room.regenerateTick);
 setInterval(() => {
     gameloop()
     gamemodeLoop();

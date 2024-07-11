@@ -1,6 +1,9 @@
+// Prepare constants
+Math.TAU = Math.PI * 2;
+
 // Global Utilities Requires
 let EventEmitter = require('events');
-global.events = new EventEmitter();
+global.Events = new EventEmitter();
 global.ran = require(".././lib/random.js");
 global.util = require(".././lib/util.js");
 global.hshg = require(".././lib/hshg.js");
@@ -46,7 +49,10 @@ global.getWeakestTeam = () => {
             teamcounts[o.team]++;
         }
     }
-    teamcounts = Object.entries(teamcounts);
+    teamcounts = Object.entries(teamcounts).map(([teamId, amount]) => {
+        let weight = teamId in Config.TEAM_WEIGHTS ? Config.TEAM_WEIGHTS[teamId] : 1;
+        return [teamId, amount / weight];
+    });
     let lowestTeamCount = Math.min(...teamcounts.map(x => x[1])),
         entries = teamcounts.filter(a => a[1] == lowestTeamCount);
     return parseInt(!entries.length ? -Math.ceil(Math.random() * Config.TEAMS) : ran.choose(entries)[0]);
@@ -96,7 +102,7 @@ global.Config = new Proxy(new EventEmitter(), {
         let abort;
         prop = TO_SCREAMING_SNAKE_CASE(prop);
 
-        events.emit('change', {
+        obj.emit('change', {
             setting: prop,
             newValue: value,
             oldValue: obj[prop],
@@ -167,13 +173,14 @@ const requires = [
     "./live/controllers.js", // The AI of the game.
     "./live/entity.js", // The actual Entity constructor.
     "./definitions/combined.js", // Class dictionary.
-    "./setup/room.js", // These are the basic room functions, set up by config.json
     "./network/sockets.js", // The networking that helps players interact with the game.
     "./network/webServer.js", // The networking that actually hosts the server.
-    "./setup/mockups.js", // This file loads the mockups.
     "./debug/logs.js", // The logging pattern for the game. Useful for pinpointing lag.
     "./debug/speedLoop.js", // The speed check loop lmao.
+    "./setup/room.js", // These are the basic room functions, set up by config.json
+    "./setup/mockups.js", // This file loads the mockups.
     "./gamemodes/bossRush.js", // Boss Rush
+    "./gamemodes/oldDreadnoughts.js", // Old Dreadnoughts
     "./gamemodes/maze.js", // Maze
     "./gamemodes/mothership.js", // The mothership mode
     "./gamemodes/manhunt.js", // The Manhunt mode
@@ -187,7 +194,6 @@ const requires = [
 
 for (let file of requires) {
     const module = require(file);
-    if (module.init) module.init(global);
     for (let key in module) {
         if (module.hasOwnProperty(key)) global[key] = module[key];
     }

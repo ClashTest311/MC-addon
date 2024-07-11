@@ -11,13 +11,20 @@ let fs = require('fs'),
         "png": "image/png",
         "ico": "image/x-icon"
     },
-wsServer = new (require('ws').WebSocketServer)({ noServer: true });
+    wsServer;
 
+try {
+    wsServer = new (require('../../lib/ws/index.js').WebSocketServer)({ noServer: true });
+} catch (err) {
+    wsServer = new (require('ws').WebSocketServer)({ noServer: true });
+}
+
+console.log("Web Server initialized.");
 if (Config.host === 'localhost') {
-    util.warn(`config.host is just "localhost", are you sure you don't mean "localhost:${Config.port}"?`);
+    util.warn(`[WEB SERVER] config.host is just "localhost", are you sure you don't mean "localhost:${Config.port}"?`);
 }
 if (Config.host.match(/localhost:(\d)/) && Config.host !== 'localhost:' + Config.port) {
-    util.warn('config.host is a localhost domain but its port is different to config.port!');
+    util.warn('[WEB SERVER] config.host is a localhost domain but its port is different to config.port!');
 }
 
 server = require('http').createServer((req, res) => {
@@ -63,5 +70,5 @@ server = require('http').createServer((req, res) => {
     res.end(resStr);
 });
 server.on('upgrade', (req, socket, head) => wsServer.handleUpgrade(req, socket, head, ws => sockets.connect(ws, req)));
-server.listen(Config.port, () => console.log("Server listening on port", Config.port));
+server.listen(Config.port, () => console.log("[WEB SERVER] Server listening on port", Config.port));
 module.exports = { server };

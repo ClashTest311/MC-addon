@@ -81,3 +81,37 @@ exports.forcePush = (object, property, ...items) => {
     object[property] = [...items];
   }
 }
+
+// Performance savings for define()
+exports.flattenDefinition = (output, definition) => {
+  definition = ensureIsClass(definition);
+
+  if (definition.PARENT) {
+      if (!Array.isArray(definition.PARENT)) {
+        exports.flattenDefinition(output, definition.PARENT);
+      } else for (let parent of definition.PARENT) {
+        if(mockupsLoaded) for (let k in parent) console.log(k, parent[k])
+        exports.flattenDefinition(output, parent);
+      }
+  }
+
+  for (let key in definition) {
+    // Skip parents
+    if (key === "PARENT") {
+      continue;
+    }
+    // Handle body stats (prevent overwriting of undefined stats)
+    if (key === "BODY") {
+      let body = definition.BODY;
+      if (!output.BODY) output.BODY = {};
+      for (let stat in body) {
+        output.BODY[stat] = body[stat];
+      }
+      continue;
+    }
+    // Handle other properties
+    output[key] = definition[key];
+  }
+
+  return output;
+};

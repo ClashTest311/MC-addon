@@ -1,5 +1,5 @@
 const { combineStats, menu, addAura, makeDeco, LayeredBoss, newWeapon, weaponArray, makeRadialAuto, makeTurret } = require('../facilitators.js');
-const { base, gunCalcNames, basePolygonDamage, basePolygonHealth, dfltskl, statnames } = require('../constants.js');
+const { base, basePolygonDamage, basePolygonHealth, dfltskl, statnames } = require('../constants.js');
 const g = require('../gunvals.js');
 require('./tanks.js');
 require('./food.js');
@@ -22,6 +22,7 @@ Class.developer = {
     ACCEPTS_SCORE: true,
     CAN_BE_ON_LEADERBOARD: true,
     CAN_GO_OUTSIDE_ROOM: false,
+    IS_IMMUNE_TO_TILES: false,
     DRAW_HEALTH: true,
     ARENA_CLOSER: true,
     INVISIBLE: [0, 0],
@@ -52,15 +53,17 @@ Class.spectator = {
     PARENT: "genericTank",
     LABEL: "Spectator",
     ALPHA: 0,
-    IGNORED_BY_AI: true,
     CAN_BE_ON_LEADERBOARD: false,
     ACCEPTS_SCORE: false,
     DRAW_HEALTH: false,
     HITS_OWN_TYPE: "never",
+    IGNORED_BY_AI: true,
     ARENA_CLOSER: true,
+    IS_IMMUNE_TO_TILES: true,
     TOOLTIP: "Left click to teleport, Right click above or below the screen to change FOV",
     SKILL_CAP: [0, 0, 0, 0, 0, 0, 0, 0, 0, 255],
     BODY: {
+        PUSHABILITY: 0,
         SPEED: 5,
         FOV: 2.5,
         DAMAGE: 0,
@@ -106,6 +109,7 @@ Class.generatorBase = {
     DRAW_HEALTH: false,
     HITS_OWN_TYPE: "never",
     ARENA_CLOSER: true,
+    IS_IMMUNE_TO_TILES: true,
     SKILL_CAP: [31, 0, 0, 0, 0, 0, 0, 0, 0, 31],
     BODY: {
         SPEED: 5,
@@ -218,16 +222,16 @@ function connectMatrix(matrix, matrix2Entrance) {
     }
 }
 let generatorMatrix = [
-    [ "egg"           , "gem"                , "jewel"                  , "crasher"             , "sentry"               , "shinySentry"        , "EggRelic"           ],
-    [ "square"        , "shinySquare"        , "legendarySquare"        , "shadowSquare"        , "rainbowSquare"        , "transSquare"        , "SquareRelic"        ],
-    [ "triangle"      , "shinyTriangle"      , "legendaryTriangle"      , "shadowTriangle"      , "rainbowTriangle"      , "transTriangle"      , "TriangleRelic"      ],
-    [ "pentagon"      , "shinyPentagon"      , "legendaryPentagon"      , "shadowPentagon"      , "rainbowPentagon"      , "transPentagon"      , "PentagonRelic"      ],
-    [ "betaPentagon"  , "shinyBetaPentagon"  , "legendaryBetaPentagon"  , "shadowBetaPentagon"  , "rainbowBetaPentagon"  , "transBetaPentagon"  , "BetaPentagonRelic"  ],
-    [ "alphaPentagon" , "shinyAlphaPentagon" , "legendaryAlphaPentagon" , "shadowAlphaPentagon" , "rainbowAlphaPentagon" , "transAlphaPentagon" , "AlphaPentagonRelic" ],
-    [ "sphere"        , "cube"               , "tetrahedron"            , "octahedron"          , "dodecahedron"         , "icosahedron"        , "tesseract"          ],
+    [ "egg"           , "gem"                , "jewel"                  , "crasher"             , "sentry"               , "shinySentry"        , "EggRelic"           , "sphere"       ],
+    [ "square"        , "shinySquare"        , "legendarySquare"        , "shadowSquare"        , "rainbowSquare"        , "transSquare"        , "SquareRelic"        , "cube"         ],
+    [ "triangle"      , "shinyTriangle"      , "legendaryTriangle"      , "shadowTriangle"      , "rainbowTriangle"      , "transTriangle"      , "TriangleRelic"      , "tetrahedron"  ],
+    [ "pentagon"      , "shinyPentagon"      , "legendaryPentagon"      , "shadowPentagon"      , "rainbowPentagon"      , "transPentagon"      , "PentagonRelic"      , "octahedron"   ],
+    [ "betaPentagon"  , "shinyBetaPentagon"  , "legendaryBetaPentagon"  , "shadowBetaPentagon"  , "rainbowBetaPentagon"  , "transBetaPentagon"  , "BetaPentagonRelic"  , "dodecahedron" ],
+    [ "alphaPentagon" , "shinyAlphaPentagon" , "legendaryAlphaPentagon" , "shadowAlphaPentagon" , "rainbowAlphaPentagon" , "transAlphaPentagon" , "AlphaPentagonRelic" , "icosahedron"  ],
+    [ "hexagon"       , "shinyHexagon"       , "legendaryHexagon"       , "shadowHexagon"       , "rainbowHexagon"       , "transHexagon"       , "HexagonRelic"       , "tesseract"    ],
 ],
 gemRelicMatrix = [];
-for (let tier of [ "", "Egg", "Square", "Triangle", "Pentagon", "BetaPentagon", "AlphaPentagon" ]) {
+for (let tier of [ "", "Egg", "Square", "Triangle", "Pentagon", "BetaPentagon", "AlphaPentagon", "Hexagon" ]) {
     let row = [];
     for (let gem of [ "Power", "Space", "Reality", "Soul", "Time", "Mind" ]) {
         row.push(gem + (tier ? tier + 'Relic' : 'Gem'));
@@ -360,7 +364,7 @@ Class.mummifier = {
             TYPE: "mummy",
             AUTOFIRE: true,
             SYNCS_SKILLS: true,
-            STAT_CALCULATOR: gunCalcNames.necro
+            STAT_CALCULATOR: "necro"
         }
     },{
         POSITION: [5.5, 13, 1.1, 8, 0, 270, 0],
@@ -369,7 +373,7 @@ Class.mummifier = {
             TYPE: "mummy",
             AUTOFIRE: true,
             SYNCS_SKILLS: true,
-            STAT_CALCULATOR: gunCalcNames.necro
+            STAT_CALCULATOR: "necro"
         }
     }],
     TURRETS: [{
@@ -449,12 +453,6 @@ Class.mmaTest2 = {
 Class.mmaTest1 = {
     PARENT: "genericTank",
     COLOR: -1,
-    // Somehow, removing the gun below causes a crash when the tank is chosen ??????
-    GUNS: [
-        {
-            POSITION: [18, 8, 1, 0, 0, 0, 0],
-        }
-    ],
     TURRETS: [
         {
             POSITION: [10, 0, 0, 0, 360, 1],
@@ -579,7 +577,7 @@ Class.makeAutoTest = {
 Class.imageShapeTest = {
     PARENT: 'genericTank',
     LABEL: "Image Shape Test",
-    SHAPE: 'round.png',
+    SHAPE: '/round.png',
     GUNS: [
         {
             POSITION: [18, 8, 1, 0, 0, 0, 0],
@@ -824,7 +822,7 @@ Class.vanquisher = {
         PROPERTIES: {
             SHOOT_SETTINGS: combineStats([g.trap, g.setTrap]),
             TYPE: "setTrap",
-            STAT_CALCULATOR: gunCalcNames.block
+            STAT_CALCULATOR: "block"
         }
 
     //launcher
@@ -832,7 +830,7 @@ Class.vanquisher = {
         POSITION: [10, 9, 1, 9, 0, 90, 0],
     },{
         POSITION: [17, 13, 1, 0, 0, 90, 0],
-        PROPERTIES: { SHOOT_SETTINGS: combineStats([g.basic, g.pounder, g.artillery, g.artillery]), TYPE: "minimissile", STAT_CALCULATOR: gunCalcNames.sustained }
+        PROPERTIES: { SHOOT_SETTINGS: combineStats([g.basic, g.pounder, g.artillery, g.artillery]), TYPE: "minimissile", STAT_CALCULATOR: "sustained" }
 
     //shotgun
     },{
@@ -1020,6 +1018,18 @@ Class.weaponArrayTest = {
     , 5),
 }
 
+Class.gunBenchmark = {
+    PARENT: 'genericTank',
+    LABEL: "Gun Benchmark",
+    GUNS: weaponArray({
+        POSITION: [60, 0.2, 0, 0, 0, 0, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, {size: 0, reload: 0.15, range: 0.05}]),
+            TYPE: ["bullet", {DRAW_SELF: false}]
+        }
+    }, 720)
+}
+
 Class.levels = menu("Levels")
 Class.levels.UPGRADES_TIER_0 = []
 for (let i = 0; i < 12; i++) {
@@ -1092,7 +1102,7 @@ Class.snakeOld = {
             POSITION: [6, 12, 1.4, 8, 0, 180, 0],
             PROPERTIES: {
                 AUTOFIRE: true,
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
                 SHOOT_SETTINGS: combineStats([g.basic, g.sniper, g.hunter, g.hunterSecondary, g.snake, g.snakeskin]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
             },
@@ -1102,7 +1112,7 @@ Class.snakeOld = {
             PROPERTIES: {
                 AUTOFIRE: true,
                 NEGATIVE_RECOIL: true,
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
                 SHOOT_SETTINGS: combineStats([g.basic, g.sniper, g.hunter, g.hunterSecondary, g.snake]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
             },
@@ -1126,7 +1136,7 @@ Class.sidewinderOld = {
             PROPERTIES: {
                 SHOOT_SETTINGS: combineStats([g.basic, g.sniper, g.hunter, g.sidewinder]),
                 TYPE: "snakeOld",
-                STAT_CALCULATOR: gunCalcNames.sustained,
+                STAT_CALCULATOR: "sustained",
             },
         },
     ],
@@ -1307,6 +1317,6 @@ Class.developer.UPGRADES_TIER_0 = ["tanks", "bosses", "spectator", "levels", "te
         Class.terrestrials.UPGRADES_TIER_0 = ["ares", "gersemi", "ezekiel", "eris", "selene"]
         Class.celestials.UPGRADES_TIER_0 = ["paladin", "freyja", "zaphkiel", "nyx", "theia", "atlas", "rhea", "julius", "genghis", "napoleon"]
         Class.eternals.UPGRADES_TIER_0 = ["odin", "kronos"]
-        Class.devBosses.UPGRADES_TIER_0 = ["taureonBoss", "zephiBoss", "dogeiscutBoss", "trplnrBoss", "frostBoss", "toothlessBoss"]
+        Class.devBosses.UPGRADES_TIER_0 = ["taureonBoss", "zephiBoss", "dogeiscutBoss", "trplnrBoss", "frostBoss", "toothlessBoss", "AEMKShipBoss"]
 
-    Class.testing.UPGRADES_TIER_0 = ["diamondShape", "miscTest", "mmaTest", "vulnturrettest", "onTest", "alphaGunTest", "strokeWidthTest", "testLayeredBoss", "tooltipTank", "turretLayerTesting", "bulletSpawnTest", "propTest", "weaponArrayTest", "radialAutoTest", "makeAutoTest", "imageShapeTest", "turretStatScaleTest", "auraBasic", "auraHealer", "weirdAutoBasic", "ghoster", "switcheroo", ["developer", "developer"], "armyOfOne", "vanquisher", "mummifier"]
+    Class.testing.UPGRADES_TIER_0 = ["diamondShape", "miscTest", "mmaTest", "vulnturrettest", "onTest", "alphaGunTest", "strokeWidthTest", "testLayeredBoss", "tooltipTank", "turretLayerTesting", "bulletSpawnTest", "propTest", "weaponArrayTest", "radialAutoTest", "makeAutoTest", "imageShapeTest", "turretStatScaleTest", "auraBasic", "auraHealer", "weirdAutoBasic", "ghoster", "gunBenchmark", "switcheroo", ["developer", "developer"], "armyOfOne", "vanquisher", "mummifier"]

@@ -1,5 +1,5 @@
 const { combineStats, makeAuto, weaponArray } = require('../facilitators.js');
-const { gunCalcNames, base } = require('../constants.js');
+const { base } = require('../constants.js');
 const g = require('../gunvals.js');
 
 // Bullets
@@ -84,7 +84,7 @@ Class.missile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {speed: 1.3, maxSpeed: 1.3}]),
                 TYPE: [ "bullet", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
                 WAIT_TO_CYCLE: true,
             }
         },
@@ -94,7 +94,7 @@ Class.missile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {speed: 1.3, maxSpeed: 1.3}]),
                 TYPE: [ "bullet", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
                 WAIT_TO_CYCLE: true,
             }
         }
@@ -109,7 +109,7 @@ Class.hypermissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, {reload: 3}]),
                 TYPE: [ "bullet", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         },
         {
@@ -118,7 +118,7 @@ Class.hypermissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, {reload: 3}]),
                 TYPE: [ "bullet", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         },
         {
@@ -149,7 +149,7 @@ Class.minimissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, { recoil: 0.5 }, g.lowPower]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         },
     ],
@@ -157,69 +157,28 @@ Class.minimissile = {
 Class.spinmissile = {
     PARENT: "missile",
     CONTROLLERS: [["spin2", {speed: 0.1}]],
-    GUNS: [
-        {
-            POSITION: [14, 8, 1, 0, 0, 0, 0],
-            PROPERTIES: {
-                AUTOFIRE: !0,
-                SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
-                WAIT_TO_CYCLE: true,
-            },
+    GUNS: weaponArray({
+        POSITION: [14, 8, 1, 0, 0, 0, 0],
+        PROPERTIES: {
+            AUTOFIRE: !0,
+            SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
+            TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+            STAT_CALCULATOR: "thruster",
+            WAIT_TO_CYCLE: true,
         },
-        {
-            POSITION: [14, 8, 1, 0, 0, 180, 0],
-            PROPERTIES: {
-                AUTOFIRE: !0,
-                SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
-                WAIT_TO_CYCLE: true,
-            },
-        },
-    ],
+    }, 2),
 }
 Class.hyperspinmissile = {
     PARENT: "spinmissile",
-    GUNS: [
-        {
-            POSITION: [14, 8, 1, 0, 0, 0, 0],
-            PROPERTIES: {
-                AUTOFIRE: !0,
-                SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
-            },
+    GUNS: weaponArray({
+        POSITION: [14, 8, 1, 0, 0, 0, 0],
+        PROPERTIES: {
+            AUTOFIRE: !0,
+            SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
+            TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
+            STAT_CALCULATOR: "thruster",
         },
-        {
-            POSITION: [14, 8, 1, 0, 0, 180, 0],
-            PROPERTIES: {
-                AUTOFIRE: !0,
-                SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
-            },
-        },
-        {
-            POSITION: [14, 8, 1, 0, 0, 90, 0],
-            PROPERTIES: {
-                AUTOFIRE: !0,
-                SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
-            },
-        },
-        {
-            POSITION: [14, 8, 1, 0, 0, 270, 0],
-            PROPERTIES: {
-                AUTOFIRE: !0,
-                SHOOT_SETTINGS: combineStats([g.basic, g.lowPower, {size: 1.1}]),
-                TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
-            },
-        },
-    ],
+    }, 4),
 }
 Class.hive = {
     PARENT: "bullet",
@@ -239,7 +198,7 @@ Class.hive = {
         PROPERTIES: {
             SHOOT_SETTINGS: combineStats([g.swarm, g.hive, g.bee]),
             TYPE: ["bee", { PERSISTS_AFTER_DEATH: true }],
-            STAT_CALCULATOR: gunCalcNames.swarm,
+            STAT_CALCULATOR: "swarm",
             AUTOFIRE: true
         },
     }, 5, 0.2)
@@ -260,7 +219,7 @@ Class.protoHive = {
         PROPERTIES: {
             SHOOT_SETTINGS: combineStats([g.swarm, g.hive, g.bee]),
             TYPE: ["bee", { PERSISTS_AFTER_DEATH: true }],
-            STAT_CALCULATOR: gunCalcNames.swarm,
+            STAT_CALCULATOR: "swarm",
             AUTOFIRE: true
         },
     }, 5, 1/3)
@@ -277,7 +236,7 @@ Class.rocketeerMissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, g.missileTrail, g.rocketeerMissileTrail]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         },
     ],
@@ -297,7 +256,7 @@ Class.sentinelMissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, g.pounder, g.destroyer]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         }, {
             POSITION: [14, 6, 1, 0, -2, 130, 0],
@@ -305,7 +264,7 @@ Class.sentinelMissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, g.skimmer]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         }, {
             POSITION: [14, 6, 1, 0, 2, 230, 0],
@@ -313,7 +272,7 @@ Class.sentinelMissile = {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.basic, g.skimmer]),
                 TYPE: ["bullet", { PERSISTS_AFTER_DEATH: true }],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         },
     ],
@@ -322,59 +281,55 @@ Class.kronosMissile = {
     PARENT: "missile",
     GUNS: [
         {
-            POSITION: [4, 8, 1.5, 14, 0, 90, 0.5],
+            POSITION: [4, 6, 1.6, 13, 0, 90, 0.5],
             PROPERTIES: {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.trap, { range: 0.5 }, {reload: 3}]),
                 TYPE: [ "trap", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.trap,
+                STAT_CALCULATOR: "trap",
             },
         }, {
-            POSITION: [4, 8, 1.5, 14, 0, -90, 0.5],
+            POSITION: [4, 6, 1.6, 13, 0, -90, 0.5],
             PROPERTIES: {
                 AUTOFIRE: true,
                 SHOOT_SETTINGS: combineStats([g.trap, { range: 0.5 }, {reload: 3}]),
                 TYPE: [ "trap", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.trap,
+                STAT_CALCULATOR: "trap",
             },
         }, {
             POSITION: [14, 6, 1, 0, -2, 150, 0],
             PROPERTIES: {
                 AUTOFIRE: true,
-                SHOOT_SETTINGS: combineStats([g.basic, {reload: 3}]),
+                SHOOT_SETTINGS: combineStats([g.basic, g.weak, {reload: 3}]),
                 TYPE: [ "bullet", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         }, {
             POSITION: [14, 6, 1, 0, 2, 210, 0],
             PROPERTIES: {
                 AUTOFIRE: true,
-                SHOOT_SETTINGS: combineStats([g.basic, {reload: 3}]),
+                SHOOT_SETTINGS: combineStats([g.basic, g.weak, {reload: 3}]),
                 TYPE: [ "bullet", { PERSISTS_AFTER_DEATH: true } ],
-                STAT_CALCULATOR: gunCalcNames.thruster,
+                STAT_CALCULATOR: "thruster",
             },
         }, {
-            POSITION: [14, 8, 1, 0, 0, 90, 0],
+            POSITION: [13, 6, 1, 0, 0, 90, 0],
         }, {
-            POSITION: [14, 8, 1, 0, 0, -90, 0],
+            POSITION: [13, 6, 1, 0, 0, -90, 0],
         },
     ],
 }
 Class.autoSmasherMissile = {
     PARENT: "missile",
-    LABEL: "Auto-Smasher",
     HITS_OWN_TYPE: "never",
-    BODY: {
-        FOV: 1.05 * base.FOV,
-        DENSITY: 2 * base.DENSITY,
-    },
+    GUNS: [],
     TURRETS: [
         {
             POSITION: [21.5, 0, 0, 0, 360, 0],
             TYPE: "smasherBody",
         }, {
-            POSITION: [11, 0, 0, 0, 360, 1],
-            TYPE: ["auto4gun", { INDEPENDENT: true }],
+            POSITION: [12, 0, 0, 0, 360, 1],
+            TYPE: "autoSmasherMissileTurret",
         },
     ],
 }
@@ -407,22 +362,6 @@ Class.surgeonPillbox = {
 
 // Drones
 Class.turretedDrone = makeAuto('drone', "Auto-Drone", {type: 'droneAutoTurret'})
-Class.gemDrone = {
-    PARENT: "drone",
-    COLOR: "aqua",
-    DRAW_HEALTH: true,
-    SHAPE: 6,
-    INDEPENDENT: true,
-    BODY: {
-        PUSHABILITY: 0.3,
-        HEALTH: 0.3*5,
-        DAMAGE: 3.375/5,
-        SPEED: 1,
-        DENSITY: 0.1,
-        RESIST: 3,
-        FOV: 100,
-    },
-}
 
 // Sunchips
 Class.sunchip = {
@@ -566,6 +505,39 @@ Class.tinyMinion = {
     ],
     DIE_AT_RANGE: true,
     BUFF_VS_FOOD: true,
+}
+Class.sentrySwarmMinion = {
+    PARENT: 'drone',
+    LABEL: 'sentry',
+    COLOR: 'pink',
+    UPGRADE_COLOR: "pink",
+    DRAW_HEALTH: true,
+    HAS_NO_RECOIL: true,
+    GUNS: Class.sentrySwarm.GUNS
+}
+Class.sentryGunMinion = {
+    PARENT: 'drone',
+    LABEL: 'sentry',
+    COLOR: 'pink',
+    UPGRADE_COLOR: "pink",
+    DRAW_HEALTH: true,
+    HAS_NO_RECOIL: true,
+    TURRETS: [{
+        POSITION: [12, 0, 0, 0, 360, 1],
+        TYPE: ['megaAutoTankGun', {GUN_STAT_SCALE: {health: 0.8}}]
+    }]
+}
+Class.sentryTrapMinion = {
+    PARENT: 'drone',
+    LABEL: 'sentry',
+    COLOR: 'pink',
+    UPGRADE_COLOR: "pink",
+    DRAW_HEALTH: true,
+    HAS_NO_RECOIL: true,
+    TURRETS: [{
+        POSITION: [12, 0, 0, 0, 360, 1],
+        TYPE: 'trapTurret'
+    }]
 }
 
 // Traps
