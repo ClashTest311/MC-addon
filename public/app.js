@@ -1435,9 +1435,12 @@ function drawFloor(px, py, ratio) {
             ctx.globalAlpha = 1;
             ctx.fillStyle = settings.graphical.screenshotMode ? color.guiwhite : color.white;
             ctx.fillRect(left, top, right - left, bottom - top);
+
+            if (settings.graphical.screenshotMode) continue;
+            
             ctx.globalAlpha = 0.3;
-            ctx.fillStyle = settings.graphical.screenshotMode ? color.guiwhite : gameDraw.modifyColor(tile);
-            ctx.fillRect(left, top, right - left, bottom - top);
+            ctx.fillStyle = gameDraw.modifyColor(tile);
+            ctx.fillRect(left, top, right - left + 1, bottom - top + 1);
         }
     }
     if (settings.graphical.showGrid) {
